@@ -10,8 +10,11 @@
 #############################################################
 
 library(tidyverse)
+library(here)
+library(rmarkdown)
+
 # Build the Site ----------------------------------------------------------
-setwd(here::here() )
+setwd(here::here())
 
 ## Clean site when we have to add new lab data
 rmarkdown::clean_site()
