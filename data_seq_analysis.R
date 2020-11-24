@@ -5,7 +5,7 @@
 # Download rawdata from lab OSF
 # Written by Sau-Chin Chen
 # E-mail: pmsp96@gmail.com
-# Last update: September 30, 2019
+# Last update: October 17, 2019
 #############################################################
 
 library(tidyverse)
@@ -38,13 +38,13 @@ BF_sequential <- function(DF, acc, scale=0.707){
   for(i in data$end_seq){
     
     ## Initial Point
-    if(i == 1){
+    if(i < 3){
       bfProg[i, "ID"] <- as.numeric(names(tmp_seq)[i])
       bfProg[i, "N"] <- 1
-      bfProg[i, "BF"] <- 0
+      bfProg[i, "BF"] <- 1
     }
     
-    if(i > 1){
+    if(i > 2){
       ## BF analysis for large and small objects
       ## Save the current sample size
       bfProg[i, "ID"] <- as.numeric(names(tmp_seq)[i])
@@ -72,7 +72,8 @@ BF_sequential <- function(DF, acc, scale=0.707){
 }
 
 # Processing lab data
-rawdata_SP_V <- dir(pattern = "rawdata_SP_V", 
+rawdata_SP_V <- dirname(getwd()) %>% 
+                dir(pattern = "rawdata_SP_V", 
                     recursive = TRUE, full.names = TRUE) %>% read.csv
 
 ## Setup of randomization seed
@@ -80,7 +81,8 @@ set.seed(100)
 
 ## Run sequential analysis and export the result to lab folder
 for(LAB in unique(rawdata_SP_V$PSA_ID)){
-  route <- dir(pattern = paste0(LAB,"$"), 
+  route <- dirname(getwd()) %>% 
+          dir(pattern = paste0(LAB,"$"), 
             recursive = TRUE, full.names = TRUE, include.dirs = TRUE)
   
   BF_sequential(subset(rawdata_SP_V, PSA_ID == LAB)) %>%

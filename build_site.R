@@ -1,10 +1,32 @@
+#######################################################################
+# R code accompanying Sau-Chin Chen et al. (2019)
+# OSF projet: https://osf.io/e428p/
+# ---------------------------------------------------------
+# Download rawdata from lab OSF
+# Written by Erin Buchanan
+# Updated by Sau-Chin Chen
+# E-mail: pmsp96@gmail.com
+# Last update: October 17, 2019
+#############################################################
+
+library(tidyverse)
 # Build the Site ----------------------------------------------------------
-setwd(here::here())
+setwd(here::here() )
+
+## Clean site when we have to add new lab data
+rmarkdown::clean_site()
+
+## Get the lab info from csv file 
+## We stored lab info in the directory "log"
+lab_info <- dirname(getwd()) %>%
+    dir(full.names = TRUE, recursive = TRUE, include.dirs = TRUE, pattern = "Lab_info.csv")  %>%
+    read.csv()
 
 # Download the data
 source("download_osf.R")
 
 # Validate the Data
+setwd(here::here() )
 source("data_validation.R")
 
 # Run the sequential analysis
@@ -21,6 +43,10 @@ rmarkdown::render("index.Rmd", output_format = "html_document", output_dir = "do
 
 #update the about page
 rmarkdown::render("about.Rmd", output_format = "html_document", output_dir = "docs")
+
+#update the faq page
+rmarkdown::render("faq.Rmd", output_format = "html_document", output_dir = "docs")
+
 
 #update Languages
 rmarkdown::render("English.Rmd", output_format = "html_document", output_dir = "docs")
@@ -39,3 +65,4 @@ rmarkdown::render("Tukish.Rmd", output_format = "html_document", output_dir = "d
 rmarkdown::render("Slovak.Rmd", output_format = "html_document", output_dir = "docs")
 rmarkdown::render("Hindi.Rmd", output_format = "html_document", output_dir = "docs")
 rmarkdown::render("Greek.Rmd", output_format = "html_document", output_dir = "docs")
+rmarkdown::render("Hebrew.Rmd", output_format = "html_document", output_dir = "docs")
