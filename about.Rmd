@@ -8,12 +8,12 @@ This website is generaged by `rmarkdown` package. You will find the example in [
 
 ## Important changes
 
-- 2019/8/27 Initilization
+- 2019/8/27 Initialization
 - 2019/9/12 Available 003 links: English, Deutsch, Magyar, Norsk, Polski
 - 2919/9/14 Add `log` confirm the lab having the log sheet.
 - 2019/9/24 Update Intro and About pages.
 - 2019/10/17 Fix Bayesian sequential analysis outputs.
 - 2019/10/26 Solve the inconsistent date format among labs.
-- 2019/11/7 Data validataion checked; The site shows the date time information on the top page.
-- 2019/12/6 Mark the laboratories had finished data collection. Provide FAQ for the participanting labs.
-- 2020/03/14 Since 2020 March, some labs in North America and Europe difficultly continue data connection because of cornovirus. Labs who had suspended data collection before the planned N: USA_173, PSA_001
+- 2019/11/7 Data validation checked; The site shows the date time information on the top page.
+- 2019/12/6 Mark the laboratories had finished data collection. Provide FAQ for the participating labs.
+- 2020/03/14 Since 2020 March, some labs in North America and Europe difficultly continue data connection because of corona virus. Labs who had suspended data collection before the planned N: USA_173, PSA_001
