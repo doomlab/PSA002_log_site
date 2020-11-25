@@ -1,0 +1,103 @@
+---
+title: "Sample Inclusion Pre-Registration"
+author: "Erin M. Buchanan"
+output: html_document
+---
+
+## Proposed Analysis Plans for PSA002
+
+In the online version of the study, we will give participants a short introduction to the study by playing the instructions aloud. They will then be given three multiple choice questions in order to assess their understanding. 
+
+### Decision Rule 1
+
+If participants answer two or three of the multiple choice questions correctly, they will be included in the online group.
+
+If participants answer none or one of the multiple choice questions correctly, they will be included in the potential online group. 
+
+### Decision Rule 2
+
+For the potential online group, we will consider the variation in their answers as a determining factor if they should be included in the online participant group. The dependent variable in this study is response latency, and participants are likely to have a somewhat arbitrary response latency. Therefore, we will use the standard error as our measure of equivalence. 
+
+First, we will set up the functions and the data. A unique particiant code is added so we can group and calculate statistics by participant. 
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+library(rio)
+library(boot)
+library(flextable)
+
+#functions
+se_function <- function(x){sd(x)/sqrt(length(x))}
+mean_function <- function(x,i){
+    mean(x[i])
+}
+
+#boot settings
+num_boot <- 1000
+
+#dataframe for results
+eq_ranges <- data.frame(language = character(),
+                        type = character(),
+                        mean = numeric(),
+                        lower = numeric(),
+                        upper = numeric())
+
+#import data
+PP <- import("../1_raw_data/rawdata_PP.csv")
+SP_M <- import("../1_raw_data/rawdata_SP_M.csv")
+SP_V <- import("../1_raw_data/rawdata_SP_V.csv")
+
+#filter only correct trials
+PP <- subset(PP, correct > 0)
+SP_M <- subset(SP_M, correct > 0)
+SP_V <- subset(SP_V, correct > 0)
+
+#unique participant names
+PP$unique <- paste(PP$SEED, PP$subject_nr, PP$logfile)
+SP_M$unique <- paste(SP_M$SEED, SP_M$subject_nr, SP_M$logfile)
+SP_V$unique <- paste(SP_V$SEED, SP_V$subject_nr, SP_V$logfile)
+```
+
+Next, we will subset the data by each language, since the effects may be mixed by language. For each participant, the standard error for the response latencies is calculated. These SEs are then bootstrapped to get a 95% Normal confidence interval to determine a range of equivalence. Participants will be included in the online group if their SE falls within this range of equivalence. Each equivalence range is separated by language and portion of the study. 
+
+## English
+
+```{r message = F, warning = F}
+EnglishPP <- subset(PP, grepl("GBR|PSA|USA", PSA_ID))
+EnglishSP_M <- subset(SP_M, grepl("GBR|PSA|USA", PSA_ID))
+EnglishSP_V <- subset(SP_V, grepl("GBR|PSA|USA", PSA_ID))
+
+SESPP <- tapply(EnglishPP$response_time, EnglishPP$unique, se_function)
+bootSESPP <- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] <- c("English", "PP", bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_M <- tapply(EnglishSP_M$response_time, EnglishSP_M$unique, se_function)
+bootSESSP_M <- boot(data = SESSP_M,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges <- rbind(eq_ranges,
+                   c("English", "SP_M", bootSESSP_M$t0, 
+                     boot.ci(bootSESSP_M)$normal[2], boot.ci(bootSESSP_M)$normal[3]))
+
+SESSP_V <- tapply(EnglishSP_V$response_time, EnglishSP_V$unique, se_function)
+bootSESSP_V <- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges <- rbind(eq_ranges,
+                   c("English", "SP_V", bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))
+```
+
+## Results
+
+```{r}
+eq_ranges$mean <- format(round(as.numeric(eq_ranges$mean),2), nsmall = 2)
+eq_ranges$lower <- format(round(as.numeric(eq_ranges$lower),2), nsmall = 2)
+eq_ranges$upper <- format(round(as.numeric(eq_ranges$upper),2), nsmall = 2)
+flextable(data = eq_ranges)
+```
+
