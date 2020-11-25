@@ -15,7 +15,7 @@ library(magrittr)
 # Import multiple-bytes string in English system
 Sys.setlocale("LC_ALL","English") 
 
-# Gather the note from labratories.
+# Gather the note from laboratories.
 # Participants' data with these words are excluded
 excluded_words <- c("had to leave","SP crashed","PP crashed","didnt finish qualtrics","már volt","SP & PP Would not work properly
 ","Completed Task A in Chinese")
@@ -30,7 +30,7 @@ setwd(here::here())
 
 # Focus on the lab with data files
 data_dir <- subset(data_info, N_files > 10) %>% pull(PSA_ID) %>% as.character()
-old_path = dirname(getwd()) ## Store the root directory
+old_path <- getwd() ## Store the root directory
 
 # Check the exist of the data directory
 rawdata_log <- NULL

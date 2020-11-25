@@ -21,7 +21,7 @@ rmarkdown::clean_site()
 
 ## Get the lab info from csv file 
 ## We stored lab info in the directory "log"
-lab_info <- dirname(getwd()) %>%
+lab_info <- getwd() %>%
     dir(full.names = TRUE, recursive = TRUE, include.dirs = TRUE, pattern = "Lab_info.csv")  %>%
     read.csv()
 
@@ -29,7 +29,7 @@ lab_info <- dirname(getwd()) %>%
 source("download_osf.R")
 
 # Validate the Data
-setwd(here::here() )
+setwd(here::here())
 source("data_validation.R")
 
 # Run the sequential analysis

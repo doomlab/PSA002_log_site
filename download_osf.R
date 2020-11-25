@@ -16,13 +16,22 @@ library(osfr)
 ##set working directory to current project folder
 setwd(here::here())
 
-
 ## Check the status of the data osf
 ## Reserve the id for processing
 ## Method to download multiple data in one OSF:
 ## https://github.com/CenterForOpenScience/osfr/issues/98
-old_path = dirname(getwd()) ## Store the root directory
+old_path <- getwd() ## Store the root directory
 N_files <- NULL
+
+## Make sure they have the raw data folder 
+if (!dir.exists(paste0(old_path, "/1_raw_data/"))){
+  dir.create(paste0(old_path, "/1_raw_data/"))
+}
+
+## create a final form
+data_info <- lab_info
+## start with zero files 
+data_info$N_files <- 0
 
 ##loop over osf_ids
 for(osf_id in lab_info$osfid){
@@ -37,6 +46,8 @@ for(osf_id in lab_info$osfid){
   
   ## Get the number of files
   N_files <- c(N_files,dim(osf_data)[1])
+  data_info$N_files[data_info$osfid == osf_id] <- dim(osf_data)[1]
+  
   
   ##make sure this lab OSF is public & has collected data
   if(subset(lab_info, osfid == osf_id)$N > 0 & 
@@ -62,7 +73,7 @@ for(osf_id in lab_info$osfid){
         osf_data %>%
           filter(name %in% Download_files) %>% 
           {split(., 1:nrow(.))} %>%
-          lapply(osf_download, path= .$name, overwrite = TRUE)
+          lapply(osf_download, path = .$name, conflicts = "overwrite")
         }
      }
   }
@@ -71,5 +82,5 @@ for(osf_id in lab_info$osfid){
 }
 
 ## Update the latest data size of each participating team.
-data_info <- bind_cols(subset(lab_info, Publicity == "Yes"), N_files = N_files)
+#data_info <- bind_cols(subset(lab_info, Publicity == "Yes"), N_files = N_files)
 write.csv(data_info, file=paste0(old_path,"/1_raw_data/data_info.csv"), row.names = FALSE)
