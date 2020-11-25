@@ -69,3 +69,5 @@ rmarkdown::render("Slovak.Rmd", output_format = "html_document", output_dir = "d
 rmarkdown::render("Hindi.Rmd", output_format = "html_document", output_dir = "docs")
 rmarkdown::render("Greek.Rmd", output_format = "html_document", output_dir = "docs")
 rmarkdown::render("Hebrew.Rmd", output_format = "html_document", output_dir = "docs")
+
+rmarkdown::render("AIPE/sim_aipe.html", output_format = "html_document", output_dir = "docs")
