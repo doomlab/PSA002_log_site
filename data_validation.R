@@ -13,7 +13,8 @@ library(data.table)
 library(magrittr)
 
 # Import multiple-bytes string in English system
-Sys.setlocale("LC_ALL","English") 
+#Sys.setlocale("LC_ALL","English") 
+Sys.setlocale("LC_ALL", "C")
 
 # Gather the note from laboratories.
 # Participants' data with these words are excluded
@@ -98,7 +99,7 @@ for(LAB in data_dir){
   rawdata_SP_V <- bind_rows(rawdata_SP_V, SP_path[SP_ind]  %>%
     lapply(read.csv) %>% rbindlist(fill = TRUE) %>%
     filter(Task == "V") %>% mutate_if(is.integer, as.character) %>%
-      ## Retreive the columns for summary
+      ## Retrieve the columns for summary
       select(datetime,LAB_SEED, logfile, subject_nr,task_order,List,Match,Orientation,PList,Probe,Target,response_time,correct,opensesame_codename,opensesame_version)) %>%
       arrange(LAB_SEED, as.numeric(logfile))
   ## Filter invalid lab seed
@@ -131,7 +132,7 @@ for(LAB in data_dir){
   ## Import PP verification data
   rawdata_PP <- bind_rows(rawdata_PP, PP_path[PP_ind]  %>%
     lapply(read.csv) %>% rbindlist(fill = TRUE) %>% mutate_if(is.integer, as.character) %>%
-      ## Retreive the columns for summary
+      ## Retrieve the columns for summary
       select(datetime,LAB_SEED, logfile,subject_nr,PPList,Orientation1,Orientation2,Identical,Picture1,Picture2,response_time,correct,opensesame_codename,opensesame_version))
   ## Filter invalid lab seed
   rawdata_PP <- rawdata_PP %>% filter(LAB_SEED %in% valid_SEED)
@@ -167,10 +168,10 @@ rawdata_log[rawdata_log$SEED==5620, "DATE"] = rawdata_log %>% filter(SEED==5620)
 
 
 #### Below code validates the consistency between lab log and SP rawdata
-#### DATE format require updateings.
+#### DATE format require updating.
 ## Rearrange the lab log and unify the date format for validation
 log_df <- (rawdata_log %>% subset(!is.na(DATE)) %>%
-    ### Not all DATE could be transfered
+    ### Not all DATE could be transferred
   mutate(lab_date = DATE %>% 
            parse_date_time(orders = c('dmy','mdy','ymd','dmy, HM','ymd, HM') ) %>%
            format(format="%Y-%m-%d"), 

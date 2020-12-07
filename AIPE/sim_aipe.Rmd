@@ -18,7 +18,7 @@ If participants answer none or one of the multiple choice questions correctly, t
 
 For the potential online group, we will consider the variation in their answers as a determining factor if they should be included in the online participant group. The dependent variable in this study is response latency, and participants are likely to have a somewhat arbitrary response latency. Therefore, we will use the standard error as our measure of equivalence. 
 
-First, we will set up the functions and the data. A unique particiant code is added so we can group and calculate statistics by participant. 
+First, we will set up the functions and the data. A unique participant code is added so we can group and calculate statistics by participant. 
 
 ```{r setup}
 knitr::opts_chunk$set(echo = TRUE)
@@ -44,28 +44,24 @@ eq_ranges <- data.frame(language = character(),
 
 #import data
 PP <- import("../1_raw_data/rawdata_PP.csv")
-SP_M <- import("../1_raw_data/rawdata_SP_M.csv")
 SP_V <- import("../1_raw_data/rawdata_SP_V.csv")
 
 #filter only correct trials
 PP <- subset(PP, correct > 0)
-SP_M <- subset(SP_M, correct > 0)
 SP_V <- subset(SP_V, correct > 0)
 
 #unique participant names
 PP$unique <- paste(PP$SEED, PP$subject_nr, PP$logfile)
-SP_M$unique <- paste(SP_M$SEED, SP_M$subject_nr, SP_M$logfile)
 SP_V$unique <- paste(SP_V$SEED, SP_V$subject_nr, SP_V$logfile)
 ```
 
 Next, we will subset the data by each language, since the effects may be mixed by language. For each participant, the standard error for the response latencies is calculated. These SEs are then bootstrapped to get a 95% Normal confidence interval to determine a range of equivalence. Participants will be included in the online group if their SE falls within this range of equivalence. Each equivalence range is separated by language and portion of the study. 
 
-## English
+## English GBR|PSA|USA|CAN
 
 ```{r message = F, warning = F}
-EnglishPP <- subset(PP, grepl("GBR|PSA|USA", PSA_ID))
-EnglishSP_M <- subset(SP_M, grepl("GBR|PSA|USA", PSA_ID))
-EnglishSP_V <- subset(SP_V, grepl("GBR|PSA|USA", PSA_ID))
+EnglishPP <- subset(PP, grepl("GBR|PSA|USA|CAN", PSA_ID))
+EnglishSP_V <- subset(SP_V, grepl("GBR|PSA|USA|CAN", PSA_ID))
 
 SESPP <- tapply(EnglishPP$response_time, EnglishPP$unique, se_function)
 bootSESPP <- boot(data = SESPP,
@@ -75,20 +71,311 @@ bootSESPP <- boot(data = SESPP,
 eq_ranges[1, ] <- c("English", "PP", bootSESPP$t0, 
                      boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
 
-SESSP_M <- tapply(EnglishSP_M$response_time, EnglishSP_M$unique, se_function)
-bootSESSP_M <- boot(data = SESSP_M,
-                R = 1000, 
-                statistic = mean_function)
-eq_ranges <- rbind(eq_ranges,
-                   c("English", "SP_M", bootSESSP_M$t0, 
-                     boot.ci(bootSESSP_M)$normal[2], boot.ci(bootSESSP_M)$normal[3]))
-
 SESSP_V <- tapply(EnglishSP_V$response_time, EnglishSP_V$unique, se_function)
 bootSESSP_V <- boot(data = SESSP_V,
                 R = 1000, 
                 statistic = mean_function)
 eq_ranges <- rbind(eq_ranges,
                    c("English", "SP_V", bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))
+```
+
+## Slovak AUT
+
+```{r message = F, warning = F}
+SlovakPP <- subset(PP, grepl("AUT", PSA_ID))
+SlovakSP_V <- subset(SP_V, grepl("AUT", PSA_ID))
+
+SESPP <- tapply(SlovakPP$response_time, SlovakPP$unique, se_function)
+bootSESPP <- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] <- c("Slovak", "PP", bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V <- tapply(SlovakSP_V$response_time, SlovakSP_V$unique, se_function)
+bootSESSP_V <- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges <- rbind(eq_ranges,
+                   c("Slovak", "SP_V", bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))
+```
+
+## Chinese CHN|TWN
+
+```{r message = F, warning = F}
+ChinesePP <- subset(PP, grepl("CHN|TWN", PSA_ID))
+ChineseSP_V <- subset(SP_V, grepl("CHN|TWN", PSA_ID))
+
+SESPP <- tapply(ChinesePP$response_time, ChinesePP$unique, se_function)
+bootSESPP <- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] <- c("Chinese", "PP", bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V <- tapply(ChineseSP_V$response_time, ChineseSP_V$unique, se_function)
+bootSESSP_V <- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges <- rbind(eq_ranges,
+                   c("Chinese", "SP_V", bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))
+```
+
+## Spanish COL|ECU
+
+```{r message = F, warning = F}
+SpanishPP <- subset(PP, grepl("COL|ECU", PSA_ID))
+SpanishSP_V <- subset(SP_V, grepl("COL|ECU", PSA_ID))
+
+SESPP <- tapply(SpanishPP$response_time, SpanishPP$unique, se_function)
+bootSESPP <- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] <- c("Spanish", "PP", bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V <- tapply(SpanishSP_V$response_time, SpanishSP_V$unique, se_function)
+bootSESSP_V <- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges <- rbind(eq_ranges,
+                   c("Spanish", "SP_V", bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))
+```
+
+## Greek GRC
+
+```{r message = F, warning = F}
+GreekPP <- subset(PP, grepl("GRC", PSA_ID))
+GreekSP_V <- subset(SP_V, grepl("GRC", PSA_ID))
+
+SESPP <- tapply(GreekPP$response_time, GreekPP$unique, se_function)
+bootSESPP <- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] <- c("Greek", "PP", bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V <- tapply(GreekSP_V$response_time, GreekSP_V$unique, se_function)
+bootSESSP_V <- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges <- rbind(eq_ranges,
+                   c("Greek", "SP_V", bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))
+```
+
+## Magyar HUN
+
+```{r message = F, warning = F}
+MagyarPP <- subset(PP, grepl("HUN", PSA_ID))
+MagyarSP_V <- subset(SP_V, grepl("HUN", PSA_ID))
+
+SESPP <- tapply(MagyarPP$response_time, MagyarPP$unique, se_function)
+bootSESPP <- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] <- c("Magyar", "PP", bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V <- tapply(MagyarSP_V$response_time, MagyarSP_V$unique, se_function)
+bootSESSP_V <- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges <- rbind(eq_ranges,
+                   c("Magyar", "SP_V", bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))
+```
+
+## Hindi IND
+
+```{r message = F, warning = F}
+HindiPP <- subset(PP, grepl("IND", PSA_ID))
+HindiSP_V <- subset(SP_V, grepl("IND", PSA_ID))
+
+SESPP <- tapply(HindiPP$response_time, HindiPP$unique, se_function)
+bootSESPP <- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] <- c("Hindi", "PP", bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V <- tapply(HindiSP_V$response_time, HindiSP_V$unique, se_function)
+bootSESSP_V <- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges <- rbind(eq_ranges,
+                   c("Hindi", "SP_V", bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))
+```
+
+## Hebrew ISR
+
+```{r message = F, warning = F}
+HebrewPP <- subset(PP, grepl("ISR", PSA_ID))
+HebrewSP_V <- subset(SP_V, grepl("ISR", PSA_ID))
+
+SESPP <- tapply(HebrewPP$response_time, HebrewPP$unique, se_function)
+bootSESPP <- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] <- c("Hebrew", "PP", bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V <- tapply(HebrewSP_V$response_time, HebrewSP_V$unique, se_function)
+bootSESSP_V <- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges <- rbind(eq_ranges,
+                   c("Hebrew", "SP_V", bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))
+```
+
+## Malay MYS
+
+```{r message = F, warning = F}
+MalayPP <- subset(PP, grepl("MYS", PSA_ID))
+MalaySP_V <- subset(SP_V, grepl("MYS", PSA_ID))
+
+SESPP <- tapply(MalayPP$response_time, MalayPP$unique, se_function)
+bootSESPP <- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] <- c("Malay", "PP", bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V <- tapply(MalaySP_V$response_time, MalaySP_V$unique, se_function)
+bootSESSP_V <- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges <- rbind(eq_ranges,
+                   c("Malay", "SP_V", bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))
+```
+
+## Norwegian NOR
+
+```{r message = F, warning = F}
+NorwegianPP <- subset(PP, grepl("NOR", PSA_ID))
+NorwegianSP_V <- subset(SP_V, grepl("NOR", PSA_ID))
+
+SESPP <- tapply(NorwegianPP$response_time, NorwegianPP$unique, se_function)
+bootSESPP <- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] <- c("Norwegian", "PP", bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V <- tapply(NorwegianSP_V$response_time, NorwegianSP_V$unique, se_function)
+bootSESSP_V <- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges <- rbind(eq_ranges,
+                   c("Norwegian", "SP_V", bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))
+```
+
+## Polish POL
+
+```{r message = F, warning = F}
+PolishPP <- subset(PP, grepl("POL", PSA_ID))
+PolishSP_V <- subset(SP_V, grepl("POL", PSA_ID))
+
+SESPP <- tapply(PolishPP$response_time, PolishPP$unique, se_function)
+bootSESPP <- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] <- c("Polish", "PP", bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V <- tapply(PolishSP_V$response_time, PolishSP_V$unique, se_function)
+bootSESSP_V <- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges <- rbind(eq_ranges,
+                   c("Polish", "SP_V", bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))
+```
+
+## Slovak SVK
+
+```{r message = F, warning = F}
+SlovakPP <- subset(PP, grepl("SVK", PSA_ID))
+SlovakSP_V <- subset(SP_V, grepl("SVK", PSA_ID))
+
+SESPP <- tapply(SlovakPP$response_time, SlovakPP$unique, se_function)
+bootSESPP <- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] <- c("Slovak", "PP", bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V <- tapply(SlovakSP_V$response_time, SlovakSP_V$unique, se_function)
+bootSESSP_V <- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges <- rbind(eq_ranges,
+                   c("Slovak", "SP_V", bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))
+```
+
+## Thai THA
+
+```{r message = F, warning = F}
+ThaiPP <- subset(PP, grepl("THA", PSA_ID))
+ThaiSP_V <- subset(SP_V, grepl("THA", PSA_ID))
+
+SESPP <- tapply(ThaiPP$response_time, ThaiPP$unique, se_function)
+bootSESPP <- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] <- c("Thai", "PP", bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V <- tapply(ThaiSP_V$response_time, ThaiSP_V$unique, se_function)
+bootSESSP_V <- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges <- rbind(eq_ranges,
+                   c("Thai", "SP_V", bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))
+```
+
+## Turkish TUR
+
+```{r message = F, warning = F}
+TurkishPP <- subset(PP, grepl("TUR", PSA_ID))
+TurkishSP_V <- subset(SP_V, grepl("TUR", PSA_ID))
+
+SESPP <- tapply(TurkishPP$response_time, TurkishPP$unique, se_function)
+bootSESPP <- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] <- c("Turkish", "PP", bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V <- tapply(TurkishSP_V$response_time, TurkishSP_V$unique, se_function)
+bootSESSP_V <- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges <- rbind(eq_ranges,
+                   c("Turkish", "SP_V", bootSESSP_V$t0, 
                      boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))
 ```
 

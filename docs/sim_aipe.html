@@ -907,7 +907,7 @@ Decision Rule 2
 For the potential online group, we will consider the variation in their answers as a determining factor if they should be included in the online participant group. The dependent variable in this study is response latency, and participants are likely to have a somewhat arbitrary response latency. Therefore, we will use the standard error as our measure of equivalence.
 </p>
 <p>
-First, we will set up the functions and the data. A unique particiant code is added so we can group and calculate statistics by participant.
+First, we will set up the functions and the data. A unique participant code is added so we can group and calculate statistics by participant.
 </p>
 <pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
 library(rio)
@@ -932,30 +932,26 @@ eq_ranges &lt;- data.frame(language = character(),
 
 #import data
 PP &lt;- import(&quot;../1_raw_data/rawdata_PP.csv&quot;)
-SP_M &lt;- import(&quot;../1_raw_data/rawdata_SP_M.csv&quot;)
 SP_V &lt;- import(&quot;../1_raw_data/rawdata_SP_V.csv&quot;)
 
 #filter only correct trials
 PP &lt;- subset(PP, correct &gt; 0)
-SP_M &lt;- subset(SP_M, correct &gt; 0)
 SP_V &lt;- subset(SP_V, correct &gt; 0)
 
 #unique participant names
 PP$unique &lt;- paste(PP$SEED, PP$subject_nr, PP$logfile)
-SP_M$unique &lt;- paste(SP_M$SEED, SP_M$subject_nr, SP_M$logfile)
 SP_V$unique &lt;- paste(SP_V$SEED, SP_V$subject_nr, SP_V$logfile)</code></pre>
 <p>
 Next, we will subset the data by each language, since the effects may be mixed by language. For each participant, the standard error for the response latencies is calculated. These SEs are then bootstrapped to get a 95% Normal confidence interval to determine a range of equivalence. Participants will be included in the online group if their SE falls within this range of equivalence. Each equivalence range is separated by language and portion of the study.
 </p>
 </div>
 </div>
-<div id="english" class="section level2">
+<div id="english-gbrpsausacan" class="section level2">
 <h2>
-English
+English GBR|PSA|USA|CAN
 </h2>
-<pre class="r"><code>EnglishPP &lt;- subset(PP, grepl(&quot;GBR|PSA|USA&quot;, PSA_ID))
-EnglishSP_M &lt;- subset(SP_M, grepl(&quot;GBR|PSA|USA&quot;, PSA_ID))
-EnglishSP_V &lt;- subset(SP_V, grepl(&quot;GBR|PSA|USA&quot;, PSA_ID))
+<pre class="r"><code>EnglishPP &lt;- subset(PP, grepl(&quot;GBR|PSA|USA|CAN&quot;, PSA_ID))
+EnglishSP_V &lt;- subset(SP_V, grepl(&quot;GBR|PSA|USA|CAN&quot;, PSA_ID))
 
 SESPP &lt;- tapply(EnglishPP$response_time, EnglishPP$unique, se_function)
 bootSESPP &lt;- boot(data = SESPP,
@@ -965,20 +961,311 @@ bootSESPP &lt;- boot(data = SESPP,
 eq_ranges[1, ] &lt;- c(&quot;English&quot;, &quot;PP&quot;, bootSESPP$t0, 
                      boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
 
-SESSP_M &lt;- tapply(EnglishSP_M$response_time, EnglishSP_M$unique, se_function)
-bootSESSP_M &lt;- boot(data = SESSP_M,
-                R = 1000, 
-                statistic = mean_function)
-eq_ranges &lt;- rbind(eq_ranges,
-                   c(&quot;English&quot;, &quot;SP_M&quot;, bootSESSP_M$t0, 
-                     boot.ci(bootSESSP_M)$normal[2], boot.ci(bootSESSP_M)$normal[3]))
-
 SESSP_V &lt;- tapply(EnglishSP_V$response_time, EnglishSP_V$unique, se_function)
 bootSESSP_V &lt;- boot(data = SESSP_V,
                 R = 1000, 
                 statistic = mean_function)
 eq_ranges &lt;- rbind(eq_ranges,
                    c(&quot;English&quot;, &quot;SP_V&quot;, bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))</code></pre>
+</div>
+<div id="slovak-aut" class="section level2">
+<h2>
+Slovak AUT
+</h2>
+<pre class="r"><code>SlovakPP &lt;- subset(PP, grepl(&quot;AUT&quot;, PSA_ID))
+SlovakSP_V &lt;- subset(SP_V, grepl(&quot;AUT&quot;, PSA_ID))
+
+SESPP &lt;- tapply(SlovakPP$response_time, SlovakPP$unique, se_function)
+bootSESPP &lt;- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] &lt;- c(&quot;Slovak&quot;, &quot;PP&quot;, bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V &lt;- tapply(SlovakSP_V$response_time, SlovakSP_V$unique, se_function)
+bootSESSP_V &lt;- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges &lt;- rbind(eq_ranges,
+                   c(&quot;Slovak&quot;, &quot;SP_V&quot;, bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))</code></pre>
+</div>
+<div id="chinese-chntwn" class="section level2">
+<h2>
+Chinese CHN|TWN
+</h2>
+<pre class="r"><code>ChinesePP &lt;- subset(PP, grepl(&quot;CHN|TWN&quot;, PSA_ID))
+ChineseSP_V &lt;- subset(SP_V, grepl(&quot;CHN|TWN&quot;, PSA_ID))
+
+SESPP &lt;- tapply(ChinesePP$response_time, ChinesePP$unique, se_function)
+bootSESPP &lt;- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] &lt;- c(&quot;Chinese&quot;, &quot;PP&quot;, bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V &lt;- tapply(ChineseSP_V$response_time, ChineseSP_V$unique, se_function)
+bootSESSP_V &lt;- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges &lt;- rbind(eq_ranges,
+                   c(&quot;Chinese&quot;, &quot;SP_V&quot;, bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))</code></pre>
+</div>
+<div id="spanish-colecu" class="section level2">
+<h2>
+Spanish COL|ECU
+</h2>
+<pre class="r"><code>SpanishPP &lt;- subset(PP, grepl(&quot;COL|ECU&quot;, PSA_ID))
+SpanishSP_V &lt;- subset(SP_V, grepl(&quot;COL|ECU&quot;, PSA_ID))
+
+SESPP &lt;- tapply(SpanishPP$response_time, SpanishPP$unique, se_function)
+bootSESPP &lt;- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] &lt;- c(&quot;Spanish&quot;, &quot;PP&quot;, bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V &lt;- tapply(SpanishSP_V$response_time, SpanishSP_V$unique, se_function)
+bootSESSP_V &lt;- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges &lt;- rbind(eq_ranges,
+                   c(&quot;Spanish&quot;, &quot;SP_V&quot;, bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))</code></pre>
+</div>
+<div id="greek-grc" class="section level2">
+<h2>
+Greek GRC
+</h2>
+<pre class="r"><code>GreekPP &lt;- subset(PP, grepl(&quot;GRC&quot;, PSA_ID))
+GreekSP_V &lt;- subset(SP_V, grepl(&quot;GRC&quot;, PSA_ID))
+
+SESPP &lt;- tapply(GreekPP$response_time, GreekPP$unique, se_function)
+bootSESPP &lt;- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] &lt;- c(&quot;Greek&quot;, &quot;PP&quot;, bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V &lt;- tapply(GreekSP_V$response_time, GreekSP_V$unique, se_function)
+bootSESSP_V &lt;- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges &lt;- rbind(eq_ranges,
+                   c(&quot;Greek&quot;, &quot;SP_V&quot;, bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))</code></pre>
+</div>
+<div id="magyar-hun" class="section level2">
+<h2>
+Magyar HUN
+</h2>
+<pre class="r"><code>MagyarPP &lt;- subset(PP, grepl(&quot;HUN&quot;, PSA_ID))
+MagyarSP_V &lt;- subset(SP_V, grepl(&quot;HUN&quot;, PSA_ID))
+
+SESPP &lt;- tapply(MagyarPP$response_time, MagyarPP$unique, se_function)
+bootSESPP &lt;- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] &lt;- c(&quot;Magyar&quot;, &quot;PP&quot;, bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V &lt;- tapply(MagyarSP_V$response_time, MagyarSP_V$unique, se_function)
+bootSESSP_V &lt;- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges &lt;- rbind(eq_ranges,
+                   c(&quot;Magyar&quot;, &quot;SP_V&quot;, bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))</code></pre>
+</div>
+<div id="hindi-ind" class="section level2">
+<h2>
+Hindi IND
+</h2>
+<pre class="r"><code>HindiPP &lt;- subset(PP, grepl(&quot;IND&quot;, PSA_ID))
+HindiSP_V &lt;- subset(SP_V, grepl(&quot;IND&quot;, PSA_ID))
+
+SESPP &lt;- tapply(HindiPP$response_time, HindiPP$unique, se_function)
+bootSESPP &lt;- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] &lt;- c(&quot;Hindi&quot;, &quot;PP&quot;, bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V &lt;- tapply(HindiSP_V$response_time, HindiSP_V$unique, se_function)
+bootSESSP_V &lt;- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges &lt;- rbind(eq_ranges,
+                   c(&quot;Hindi&quot;, &quot;SP_V&quot;, bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))</code></pre>
+</div>
+<div id="hebrew-isr" class="section level2">
+<h2>
+Hebrew ISR
+</h2>
+<pre class="r"><code>HebrewPP &lt;- subset(PP, grepl(&quot;ISR&quot;, PSA_ID))
+HebrewSP_V &lt;- subset(SP_V, grepl(&quot;ISR&quot;, PSA_ID))
+
+SESPP &lt;- tapply(HebrewPP$response_time, HebrewPP$unique, se_function)
+bootSESPP &lt;- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] &lt;- c(&quot;Hebrew&quot;, &quot;PP&quot;, bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V &lt;- tapply(HebrewSP_V$response_time, HebrewSP_V$unique, se_function)
+bootSESSP_V &lt;- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges &lt;- rbind(eq_ranges,
+                   c(&quot;Hebrew&quot;, &quot;SP_V&quot;, bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))</code></pre>
+</div>
+<div id="malay-mys" class="section level2">
+<h2>
+Malay MYS
+</h2>
+<pre class="r"><code>MalayPP &lt;- subset(PP, grepl(&quot;MYS&quot;, PSA_ID))
+MalaySP_V &lt;- subset(SP_V, grepl(&quot;MYS&quot;, PSA_ID))
+
+SESPP &lt;- tapply(MalayPP$response_time, MalayPP$unique, se_function)
+bootSESPP &lt;- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] &lt;- c(&quot;Malay&quot;, &quot;PP&quot;, bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V &lt;- tapply(MalaySP_V$response_time, MalaySP_V$unique, se_function)
+bootSESSP_V &lt;- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges &lt;- rbind(eq_ranges,
+                   c(&quot;Malay&quot;, &quot;SP_V&quot;, bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))</code></pre>
+</div>
+<div id="norwegian-nor" class="section level2">
+<h2>
+Norwegian NOR
+</h2>
+<pre class="r"><code>NorwegianPP &lt;- subset(PP, grepl(&quot;NOR&quot;, PSA_ID))
+NorwegianSP_V &lt;- subset(SP_V, grepl(&quot;NOR&quot;, PSA_ID))
+
+SESPP &lt;- tapply(NorwegianPP$response_time, NorwegianPP$unique, se_function)
+bootSESPP &lt;- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] &lt;- c(&quot;Norwegian&quot;, &quot;PP&quot;, bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V &lt;- tapply(NorwegianSP_V$response_time, NorwegianSP_V$unique, se_function)
+bootSESSP_V &lt;- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges &lt;- rbind(eq_ranges,
+                   c(&quot;Norwegian&quot;, &quot;SP_V&quot;, bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))</code></pre>
+</div>
+<div id="polish-pol" class="section level2">
+<h2>
+Polish POL
+</h2>
+<pre class="r"><code>PolishPP &lt;- subset(PP, grepl(&quot;POL&quot;, PSA_ID))
+PolishSP_V &lt;- subset(SP_V, grepl(&quot;POL&quot;, PSA_ID))
+
+SESPP &lt;- tapply(PolishPP$response_time, PolishPP$unique, se_function)
+bootSESPP &lt;- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] &lt;- c(&quot;Polish&quot;, &quot;PP&quot;, bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V &lt;- tapply(PolishSP_V$response_time, PolishSP_V$unique, se_function)
+bootSESSP_V &lt;- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges &lt;- rbind(eq_ranges,
+                   c(&quot;Polish&quot;, &quot;SP_V&quot;, bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))</code></pre>
+</div>
+<div id="slovak-svk" class="section level2">
+<h2>
+Slovak SVK
+</h2>
+<pre class="r"><code>SlovakPP &lt;- subset(PP, grepl(&quot;SVK&quot;, PSA_ID))
+SlovakSP_V &lt;- subset(SP_V, grepl(&quot;SVK&quot;, PSA_ID))
+
+SESPP &lt;- tapply(SlovakPP$response_time, SlovakPP$unique, se_function)
+bootSESPP &lt;- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] &lt;- c(&quot;Slovak&quot;, &quot;PP&quot;, bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V &lt;- tapply(SlovakSP_V$response_time, SlovakSP_V$unique, se_function)
+bootSESSP_V &lt;- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges &lt;- rbind(eq_ranges,
+                   c(&quot;Slovak&quot;, &quot;SP_V&quot;, bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))</code></pre>
+</div>
+<div id="thai-tha" class="section level2">
+<h2>
+Thai THA
+</h2>
+<pre class="r"><code>ThaiPP &lt;- subset(PP, grepl(&quot;THA&quot;, PSA_ID))
+ThaiSP_V &lt;- subset(SP_V, grepl(&quot;THA&quot;, PSA_ID))
+
+SESPP &lt;- tapply(ThaiPP$response_time, ThaiPP$unique, se_function)
+bootSESPP &lt;- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] &lt;- c(&quot;Thai&quot;, &quot;PP&quot;, bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V &lt;- tapply(ThaiSP_V$response_time, ThaiSP_V$unique, se_function)
+bootSESSP_V &lt;- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges &lt;- rbind(eq_ranges,
+                   c(&quot;Thai&quot;, &quot;SP_V&quot;, bootSESSP_V$t0, 
+                     boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))</code></pre>
+</div>
+<div id="turkish-tur" class="section level2">
+<h2>
+Turkish TUR
+</h2>
+<pre class="r"><code>TurkishPP &lt;- subset(PP, grepl(&quot;TUR&quot;, PSA_ID))
+TurkishSP_V &lt;- subset(SP_V, grepl(&quot;TUR&quot;, PSA_ID))
+
+SESPP &lt;- tapply(TurkishPP$response_time, TurkishPP$unique, se_function)
+bootSESPP &lt;- boot(data = SESPP,
+                R = 1000, 
+                statistic = mean_function)
+
+eq_ranges[1, ] &lt;- c(&quot;Turkish&quot;, &quot;PP&quot;, bootSESPP$t0, 
+                     boot.ci(bootSESPP)$normal[2], boot.ci(bootSESPP)$normal[3])
+
+SESSP_V &lt;- tapply(TurkishSP_V$response_time, TurkishSP_V$unique, se_function)
+bootSESSP_V &lt;- boot(data = SESSP_V,
+                R = 1000, 
+                statistic = mean_function)
+eq_ranges &lt;- rbind(eq_ranges,
+                   c(&quot;Turkish&quot;, &quot;SP_V&quot;, bootSESSP_V$t0, 
                      boot.ci(bootSESSP_V)$normal[2], boot.ci(bootSESSP_V)$normal[3]))</code></pre>
 </div>
 <div id="results" class="section level2">
@@ -990,116 +1277,440 @@ eq_ranges$lower &lt;- format(round(as.numeric(eq_ranges$lower),2), nsmall = 2)
 eq_ranges$upper &lt;- format(round(as.numeric(eq_ranges$upper),2), nsmall = 2)
 flextable(data = eq_ranges)</code></pre>
 <div class="tabwid">
-<style>.cl-0fc131b0{font-family:'Arial';font-size:11px;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(17, 17, 17, 1.00);background-color:transparent;}.cl-0fc142fe{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:2px;padding-top:2px;padding-left:5px;padding-right:5px;line-height: 1.00;background-color:transparent;}.cl-0fc16068{width:54px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0fc1607c{width:54px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-0fc16086{width:54px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 2.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style>
+<style>.cl-ceae68ca{font-family:'Arial';font-size:11px;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(17, 17, 17, 1.00);background-color:transparent;}.cl-ceae8742{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:2px;padding-top:2px;padding-left:5px;padding-right:5px;line-height: 1.00;background-color:transparent;}.cl-ceaeb230{width:54px;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-ceaeb262{width:54px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-ceaeb26c{width:54px;background-color:transparent;vertical-align: middle;border-bottom: 2.00px solid rgba(0, 0, 0, 1.00);border-top: 2.00px solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style>
 <table style="border-collapse:collapse;">
 <thead>
 <tr style="overflow-wrap:break-word;">
-<td class="cl-0fc16086">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0">language</span>
+<td class="cl-ceaeb26c">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">language</span>
 </p>
 </td>
-<td class="cl-0fc16086">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0">type</span>
+<td class="cl-ceaeb26c">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">type</span>
 </p>
 </td>
-<td class="cl-0fc16086">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0">mean</span>
+<td class="cl-ceaeb26c">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">mean</span>
 </p>
 </td>
-<td class="cl-0fc16086">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0">lower</span>
+<td class="cl-ceaeb26c">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">lower</span>
 </p>
 </td>
-<td class="cl-0fc16086">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0">upper</span>
+<td class="cl-ceaeb26c">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">upper</span>
 </p>
 </td>
 </tr>
 </thead>
 <tbody>
 <tr style="overflow-wrap:break-word;">
-<td class="cl-0fc16068">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0">English</span>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">Turkish</span>
 </p>
 </td>
-<td class="cl-0fc16068">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0">PP</span>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">PP</span>
 </p>
 </td>
-<td class="cl-0fc16068">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0"> 17.38</span>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">19.68</span>
 </p>
 </td>
-<td class="cl-0fc16068">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0"> 16.54</span>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">18.73</span>
 </p>
 </td>
-<td class="cl-0fc16068">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0"> 18.25</span>
-</p>
-</td>
-</tr>
-<tr style="overflow-wrap:break-word;">
-<td class="cl-0fc16068">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0">English</span>
-</p>
-</td>
-<td class="cl-0fc16068">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0">SP_M</span>
-</p>
-</td>
-<td class="cl-0fc16068">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0">463.99</span>
-</p>
-</td>
-<td class="cl-0fc16068">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0">432.54</span>
-</p>
-</td>
-<td class="cl-0fc16068">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0">494.73</span>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">20.66</span>
 </p>
 </td>
 </tr>
 <tr style="overflow-wrap:break-word;">
-<td class="cl-0fc1607c">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0">English</span>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">English</span>
 </p>
 </td>
-<td class="cl-0fc1607c">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0">SP_V</span>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">SP_V</span>
 </p>
 </td>
-<td class="cl-0fc1607c">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0"> 26.01</span>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">26.82</span>
 </p>
 </td>
-<td class="cl-0fc1607c">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0"> 24.73</span>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">25.91</span>
 </p>
 </td>
-<td class="cl-0fc1607c">
-<p class="cl-0fc142fe">
-<span class="cl-0fc131b0"> 27.29</span>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">27.74</span>
+</p>
+</td>
+</tr>
+<tr style="overflow-wrap:break-word;">
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">Slovak</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">SP_V</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">21.94</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">20.55</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">23.36</span>
+</p>
+</td>
+</tr>
+<tr style="overflow-wrap:break-word;">
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">Chinese</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">SP_V</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">29.93</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">28.17</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">31.64</span>
+</p>
+</td>
+</tr>
+<tr style="overflow-wrap:break-word;">
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">Spanish</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">SP_V</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">35.47</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">33.34</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">37.70</span>
+</p>
+</td>
+</tr>
+<tr style="overflow-wrap:break-word;">
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">Greek</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">SP_V</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">33.99</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">31.57</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">36.26</span>
+</p>
+</td>
+</tr>
+<tr style="overflow-wrap:break-word;">
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">Magyar</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">SP_V</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">25.38</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">23.66</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">27.14</span>
+</p>
+</td>
+</tr>
+<tr style="overflow-wrap:break-word;">
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">Hindi</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">SP_V</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">38.56</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">35.96</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">41.12</span>
+</p>
+</td>
+</tr>
+<tr style="overflow-wrap:break-word;">
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">Hebrew</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">SP_V</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">24.35</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">23.03</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">25.70</span>
+</p>
+</td>
+</tr>
+<tr style="overflow-wrap:break-word;">
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">Malay</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">SP_V</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">30.26</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">28.44</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">32.06</span>
+</p>
+</td>
+</tr>
+<tr style="overflow-wrap:break-word;">
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">Norwegian</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">SP_V</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">26.36</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">24.80</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">27.92</span>
+</p>
+</td>
+</tr>
+<tr style="overflow-wrap:break-word;">
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">Polish</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">SP_V</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">27.42</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">24.90</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">29.90</span>
+</p>
+</td>
+</tr>
+<tr style="overflow-wrap:break-word;">
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">Slovak</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">SP_V</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">29.91</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">25.98</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">34.06</span>
+</p>
+</td>
+</tr>
+<tr style="overflow-wrap:break-word;">
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">Thai</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">SP_V</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">27.46</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">24.58</span>
+</p>
+</td>
+<td class="cl-ceaeb230">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">30.48</span>
+</p>
+</td>
+</tr>
+<tr style="overflow-wrap:break-word;">
+<td class="cl-ceaeb262">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">Turkish</span>
+</p>
+</td>
+<td class="cl-ceaeb262">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">SP_V</span>
+</p>
+</td>
+<td class="cl-ceaeb262">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">31.43</span>
+</p>
+</td>
+<td class="cl-ceaeb262">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">29.82</span>
+</p>
+</td>
+<td class="cl-ceaeb262">
+<p class="cl-ceae8742">
+<span class="cl-ceae68ca">32.97</span>
 </p>
 </td>
 </tr>

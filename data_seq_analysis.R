@@ -13,7 +13,8 @@ library(data.table)
 library(magrittr)
 
 # Import multiple-bytes string in English system
-Sys.setlocale("LC_ALL","English") 
+# Sys.setlocale("LC_ALL","English") 
+Sys.setlocale("LC_ALL", "C")
 
 ##set working directory to current project folder
 setwd(here::here())
